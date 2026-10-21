@@ -1,0 +1,536 @@
+<title>طبقي الذكي</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Baloo+Bhaijaan+2:wght@500;700;800&family=Readex+Pro:wght@400;500;600&display=swap">
+<style>
+/* Layout: a kitchen-table game — big plate as the stage, a pantry tray beside it, tabs for the three challenges */
+:root{
+  --bg:#FFF6E6; --surface:#FFFDF7; --ink:#2E4320; --muted:#6B7A55;
+  --pist:#93C13E; --pist-deep:#5E8A1E; --pist-soft:#E7F2CF;
+  --orange:#F28A2E; --orange-soft:#FFE3C7;
+  --plate:#FFFFFF; --plate-rim:#E9E1CC; --line:#EADFC6;
+  --g-veg:#5FA83A; --g-fruit:#E0555B; --g-grain:#D9A23A; --g-protein:#C46A2B; --g-dairy:#4B8FCB;
+  --shadow:0 10px 30px rgba(94,138,30,.14);
+  --f-display:"Baloo Bhaijaan 2","Readex Pro",system-ui,sans-serif;
+  --f-body:"Readex Pro","Segoe UI",Tahoma,system-ui,sans-serif;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#1B2414; --surface:#243019; --ink:#EEF4DD; --muted:#A9B892;
+  --pist:#A6D45A; --pist-deep:#C3E58A; --pist-soft:#33461F;
+  --orange:#FFA24F; --orange-soft:#4A3420;
+  --plate:#2E3B22; --plate-rim:#3E4E2E; --line:#3A4A2B;
+  --g-veg:#7FC85A; --g-fruit:#F07A7F; --g-grain:#E8BC5E; --g-protein:#E08A4E; --g-dairy:#79B4E6;
+  --shadow:0 10px 30px rgba(0,0,0,.35); color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#1B2414; --surface:#243019; --ink:#EEF4DD; --muted:#A9B892;
+  --pist:#A6D45A; --pist-deep:#C3E58A; --pist-soft:#33461F;
+  --orange:#FFA24F; --orange-soft:#4A3420;
+  --plate:#2E3B22; --plate-rim:#3E4E2E; --line:#3A4A2B;
+  --g-veg:#7FC85A; --g-fruit:#F07A7F; --g-grain:#E8BC5E; --g-protein:#E08A4E; --g-dairy:#79B4E6;
+  --shadow:0 10px 30px rgba(0,0,0,.35); color-scheme:dark}
+
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:15px;line-height:1.7;direction:rtl;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:0 40px;
+  background-image:radial-gradient(circle at 12% 8%,var(--pist-soft) 0 120px,transparent 121px),radial-gradient(circle at 92% 30%,var(--orange-soft) 0 90px,transparent 91px);background-repeat:no-repeat}
+.wrap{max-width:1080px;margin:0 auto}
+h1,h2,h3{font-family:var(--f-display);text-wrap:balance;margin:0;line-height:1.2}
+button{font-family:inherit;cursor:pointer}
+:focus-visible{outline:3px solid var(--orange);outline-offset:3px}
+
+/* header */
+header{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;padding-block:22px 10px}
+.brand{display:flex;align-items:center;gap:12px}
+.logo{width:54px;height:54px;border-radius:50%;background:var(--plate);border:5px solid var(--pist);display:grid;place-items:center;font-size:26px;box-shadow:var(--shadow)}
+.brand h1{font-size:clamp(28px,5vw,40px);font-weight:800;color:var(--pist-deep)}
+.brand h1 span{color:var(--orange)}
+.brand p{margin:0;color:var(--muted);font-size:13px}
+.score{display:flex;align-items:center;gap:8px;background:var(--surface);border:2px solid var(--orange);border-radius:999px;padding:6px 16px;font-family:var(--f-display);font-weight:700;font-size:18px;box-shadow:var(--shadow)}
+.score b{color:var(--orange);font-variant-numeric:tabular-nums;font-size:22px}
+.score.pop{animation:pop .5s}
+
+/* tabs */
+nav{display:flex;gap:8px;flex-wrap:wrap;margin-block:10px 20px}
+nav button{flex:1 1 150px;border:2px solid var(--line);background:var(--surface);color:var(--ink);border-radius:16px;padding:10px 14px;font-family:var(--f-display);font-weight:700;font-size:17px;display:flex;align-items:center;justify-content:center;gap:8px;transition:transform .15s,background .2s}
+nav button small{font-family:var(--f-body);font-weight:500;font-size:12px;color:var(--muted)}
+nav button[aria-selected="true"]{background:var(--pist);border-color:var(--pist);color:#1F3010}
+nav button[aria-selected="true"] small{color:#2E4320}
+nav button:hover{transform:translateY(-2px)}
+
+/* build view */
+.build{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,1fr);gap:24px;align-items:start}
+@media (max-width:820px){.build{grid-template-columns:1fr}}
+.stage{background:var(--surface);border-radius:28px;padding:20px;box-shadow:var(--shadow);display:flex;flex-direction:column;gap:14px;align-items:center}
+.stage-head{width:100%;display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+.stage-head h2{font-size:24px}
+.ghost-btn{border:2px solid var(--line);background:transparent;color:var(--ink);border-radius:12px;padding:6px 14px;font-size:14px}
+.ghost-btn:hover{border-color:var(--orange);color:var(--orange)}
+
+.table{position:relative;width:min(100%,430px);padding-bottom:6px}
+.plate{position:relative;width:100%;aspect-ratio:1;max-width:100%;border-radius:50%;background:var(--plate);
+  border:14px solid var(--plate-rim);box-shadow:inset 0 0 0 6px var(--plate),inset 0 0 0 8px var(--line),var(--shadow);transition:transform .25s,box-shadow .25s}
+.plate.over{transform:scale(1.03);box-shadow:inset 0 0 0 6px var(--plate),inset 0 0 0 8px var(--pist),0 0 0 6px var(--pist-soft),var(--shadow)}
+.plate.bump{animation:bump .4s}
+.plate svg{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
+.qlabel{position:absolute;font-family:var(--f-display);font-weight:700;font-size:13px;opacity:.55;pointer-events:none;transform:translate(-50%,-50%);white-space:nowrap}
+.onplate{position:absolute;transform:translate(-50%,-50%);width:15%;aspect-ratio:1;border:none;background:none;font-size:clamp(26px,7vw,38px);line-height:1;display:grid;place-items:center;padding:0;animation:drop .45s cubic-bezier(.3,1.6,.5,1)}
+.onplate:hover{filter:drop-shadow(0 0 6px var(--orange))}
+.cup{position:absolute;bottom:-4px;left:-6px;width:27%;aspect-ratio:1;border-radius:50%;background:var(--plate);border:6px solid var(--g-dairy);display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:2px;box-shadow:var(--shadow)}
+.cup .cap{position:absolute;bottom:-22px;font-size:11px;color:var(--muted);white-space:nowrap;font-weight:600}
+.cup .onplate{position:static;transform:none;width:auto;font-size:clamp(20px,5vw,28px)}
+.hint-drop{font-size:13px;color:var(--muted);text-align:center;margin-top:16px}
+
+.groups{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;width:100%}
+.gchip{display:flex;align-items:center;gap:6px;border-radius:999px;padding:4px 12px;font-size:13px;font-weight:600;border:2px dashed var(--line);color:var(--muted);transition:all .3s}
+.gchip i{width:10px;height:10px;border-radius:50%;background:var(--c);opacity:.4}
+.gchip.on{border-style:solid;border-color:var(--c);color:var(--ink);background:var(--surface)}
+.gchip.on i{opacity:1}
+.gchip.opt{font-weight:500}
+
+.msg{width:100%;min-height:56px;border-radius:16px;padding:10px 16px;background:var(--pist-soft);font-size:14.5px;display:flex;align-items:center;gap:10px}
+.msg.win{background:var(--orange-soft);font-family:var(--f-display);font-size:19px;font-weight:700;color:var(--ink);justify-content:center;text-align:center;animation:pop .6s}
+
+/* tray */
+.tray{display:flex;flex-direction:column;gap:14px}
+.tray h2{font-size:22px}
+.tray .sub{margin:0;color:var(--muted);font-size:13.5px}
+.shelf{background:var(--surface);border-radius:20px;padding:12px 14px;border-inline-start:6px solid var(--c);box-shadow:var(--shadow)}
+.shelf h3{font-size:16px;color:var(--c);margin-bottom:6px;display:flex;align-items:center;gap:6px}
+.foods{display:grid;grid-template-columns:repeat(auto-fill,minmax(70px,1fr));gap:8px}
+.food{touch-action:none;user-select:none;-webkit-user-select:none;border:2px solid var(--line);background:var(--bg);color:var(--ink);border-radius:16px;padding:6px 4px;display:flex;flex-direction:column;align-items:center;gap:0;font-size:12.5px;font-weight:500;transition:transform .15s,border-color .15s}
+.food span{font-size:30px;line-height:1.2}
+.food:hover{transform:translateY(-3px) rotate(-3deg);border-color:var(--c)}
+.food.lift{opacity:.35}
+.filters{display:flex;flex-wrap:wrap;gap:6px}
+.filters button{border:2px solid var(--line);background:var(--surface);color:var(--ink);border-radius:999px;padding:4px 12px;font-size:13px;font-weight:600}
+.filters button[aria-pressed="true"]{background:var(--c,var(--pist));border-color:var(--c,var(--pist));color:#fff}
+.ghost{position:fixed;z-index:50;pointer-events:none;font-size:46px;transform:translate(-50%,-50%) rotate(-8deg);filter:drop-shadow(0 8px 10px rgba(0,0,0,.25))}
+
+/* mystery */
+.mystery{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:24px;align-items:start}
+@media (max-width:820px){.mystery{grid-template-columns:1fr}}
+.card3d{perspective:1000px;width:100%;max-width:420px;aspect-ratio:4/3;justify-self:center}
+.flip{position:relative;width:100%;height:100%;transition:transform .7s cubic-bezier(.4,.2,.2,1);transform-style:preserve-3d}
+.flip.open{transform:rotateY(180deg)}
+.face{position:absolute;inset:0;backface-visibility:hidden;border-radius:28px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;padding:20px;text-align:center;box-shadow:var(--shadow)}
+.front{background:var(--pist);color:#1F3010;background-image:repeating-linear-gradient(45deg,transparent 0 18px,rgba(255,255,255,.12) 18px 36px)}
+.front .q{font-family:var(--f-display);font-size:90px;font-weight:800;line-height:1;animation:float 3s ease-in-out infinite}
+.front h3{font-size:24px}
+.back{background:var(--surface);transform:rotateY(180deg);border:3px solid var(--orange)}
+.back .emo{font-size:72px;line-height:1}
+.back h3{font-size:26px}
+.back p{margin:0;color:var(--muted);font-size:13px}
+.solve{background:var(--surface);border-radius:28px;padding:20px;box-shadow:var(--shadow);display:flex;flex-direction:column;gap:14px}
+.solve h2{font-size:22px}
+.solve .counter{color:var(--muted);font-size:13px;font-variant-numeric:tabular-nums}
+.picks{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px}
+.pick{border:2px solid var(--line);background:var(--bg);color:var(--ink);border-radius:16px;padding:10px;font-weight:600;font-size:15px;display:flex;align-items:center;gap:8px;transition:all .2s}
+.pick i{width:14px;height:14px;border-radius:50%;border:2px solid var(--c);flex:none}
+.pick[aria-pressed="true"]{border-color:var(--c);background:var(--surface)}
+.pick[aria-pressed="true"] i{background:var(--c)}
+.pick.right{border-color:var(--g-veg);background:var(--pist-soft)}
+.pick.missed{border-style:dashed;border-color:var(--orange)}
+.pick.extra{opacity:.5;text-decoration:line-through}
+.pick:disabled{cursor:default}
+.primary{border:none;background:var(--orange);color:#2B1606;border-radius:16px;padding:12px 20px;font-family:var(--f-display);font-weight:800;font-size:18px;transition:transform .15s}
+.primary:hover:not(:disabled){transform:translateY(-2px)}
+.primary:disabled{opacity:.45;cursor:not-allowed}
+.explain{border-radius:16px;padding:12px 16px;background:var(--pist-soft);font-size:14.5px;animation:pop .5s}
+.explain strong{font-family:var(--f-display);font-size:17px;display:block}
+
+/* badges */
+.badges-head{display:flex;justify-content:space-between;align-items:end;flex-wrap:wrap;gap:10px;margin-bottom:16px}
+.badges-head h2{font-size:26px}
+.badges-head p{margin:0;color:var(--muted)}
+.meter{flex:1 1 260px;max-width:380px}
+.meter .bar{height:14px;border-radius:999px;background:var(--line);overflow:hidden}
+.meter .bar div{height:100%;background:linear-gradient(90deg,var(--orange),var(--pist));border-radius:999px;transition:width .6s}
+.meter small{color:var(--muted);font-variant-numeric:tabular-nums}
+.badges{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:14px}
+.badge{background:var(--surface);border-radius:22px;padding:18px 14px;text-align:center;display:flex;flex-direction:column;align-items:center;gap:6px;box-shadow:var(--shadow);border:2px solid transparent}
+.medal{width:78px;height:78px;border-radius:50%;display:grid;place-items:center;font-size:38px;background:var(--line);filter:grayscale(1);opacity:.5;position:relative}
+.badge h3{font-size:18px}
+.badge p{margin:0;font-size:12.5px;color:var(--muted)}
+.badge.got{border-color:var(--orange)}
+.badge.got .medal{filter:none;opacity:1;background:radial-gradient(circle,var(--orange-soft) 55%,var(--orange) 56% 62%,var(--pist) 63%)}
+.badge .state{font-size:12px;font-weight:600;color:var(--muted)}
+.badge.got .state{color:var(--orange)}
+
+/* certificates */
+.cert-top{display:flex;justify-content:space-between;align-items:end;gap:14px;flex-wrap:wrap;margin-bottom:16px}
+.cert-top h2{font-size:26px}
+.cert-top p{margin:0;color:var(--muted)}
+.namebox{display:flex;flex-direction:column;gap:4px;flex:1 1 260px;max-width:360px}
+.namebox label{font-size:13px;font-weight:600;color:var(--muted)}
+.namebox input{font-family:var(--f-display);font-size:20px;font-weight:700;border:2px solid var(--line);border-radius:14px;padding:8px 14px;background:var(--surface);color:var(--ink);width:100%}
+.namebox input:focus{border-color:var(--pist);outline:none}
+.certs{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:14px;margin-bottom:20px}
+.cert{background:var(--surface);border:2px solid var(--line);border-radius:22px;padding:16px;display:flex;flex-direction:column;gap:8px;text-align:start;color:var(--ink);box-shadow:var(--shadow);transition:transform .15s,border-color .2s}
+.cert .ci{font-size:34px;line-height:1}
+.cert h3{font-size:19px}
+.cert p{margin:0;font-size:12.5px;color:var(--muted)}
+.cert .st{font-size:12.5px;font-weight:600;color:var(--muted)}
+.cert.open .st{color:var(--orange)}
+.cert.open:hover{transform:translateY(-3px);border-color:var(--orange)}
+.cert[aria-current="true"]{border-color:var(--orange);background:var(--orange-soft)}
+.cert:disabled{opacity:.6;cursor:not-allowed}
+.preview{background:var(--surface);border-radius:24px;padding:16px;box-shadow:var(--shadow);display:flex;flex-direction:column;align-items:center;gap:10px}
+.preview img{width:100%;max-width:900px;border-radius:12px;box-shadow:0 6px 20px rgba(0,0,0,.18);animation:pop .5s}
+.preview .note{font-size:13px;color:var(--muted);text-align:center}
+.empty{padding:30px 10px;text-align:center;color:var(--muted)}
+.empty b{display:block;font-family:var(--f-display);font-size:20px;color:var(--ink)}
+
+/* toast + confetti */
+.toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translate(-50%,140%);background:var(--ink);color:var(--bg);border-radius:18px;padding:12px 20px;display:flex;align-items:center;gap:12px;z-index:60;transition:transform .45s cubic-bezier(.3,1.4,.5,1);max-width:calc(100% - 32px);font-weight:600}
+.toast.show{transform:translate(-50%,0)}
+.toast span{font-size:30px}
+#confetti{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:55}
+footer{text-align:center;color:var(--muted);font-size:12.5px;margin-top:32px}
+
+@keyframes pop{0%{transform:scale(.85)}60%{transform:scale(1.06)}100%{transform:scale(1)}}
+@keyframes bump{50%{transform:scale(1.04) rotate(-1deg)}}
+@keyframes drop{0%{transform:translate(-50%,-120%) scale(.4);opacity:0}100%{transform:translate(-50%,-50%) scale(1);opacity:1}}
+@keyframes float{50%{transform:translateY(-8px) rotate(4deg)}}
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
+</style>
+
+<div class="wrap">
+  <header>
+    <div class="brand">
+      <div class="logo" aria-hidden="true">🥗</div>
+      <div><h1>طبقي <span>الذكي</span></h1><p>العبي وتعلّمي كيف تكوّنين طبقًا متوازنًا</p></div>
+    </div>
+    <div class="score" id="score" aria-live="polite">⭐ نقاطي <b id="pts">0</b></div>
+  </header>
+
+  <nav role="tablist">
+    <button role="tab" id="t-build" aria-selected="true" data-view="build">🍽️ كوّني طبقك <small>اسحبي وأفلتي</small></button>
+    <button role="tab" id="t-mystery" aria-selected="false" data-view="mystery">❓ الوجبة الغامضة <small>اكتشفي المجموعات</small></button>
+    <button role="tab" id="t-badges" aria-selected="false" data-view="badges">🏅 خبيرة التغذية <small>شاراتي</small></button>
+    <button role="tab" id="t-certs" aria-selected="false" data-view="certs">🎓 شهاداتي <small>شهادات الإنجاز</small></button>
+  </nav>
+
+  <!-- BUILD -->
+  <section id="v-build" class="build">
+    <div class="stage">
+      <div class="stage-head">
+        <h2>طبقي</h2>
+        <button class="ghost-btn" id="reset">↺ طبق جديد</button>
+      </div>
+      <div class="table" id="dropzone">
+        <div class="plate" id="plate">
+          <svg viewBox="0 0 100 100" aria-hidden="true"><line x1="50" y1="6" x2="50" y2="94" stroke="var(--line)" stroke-width=".8" stroke-dasharray="2 2"/><line x1="6" y1="50" x2="94" y2="50" stroke="var(--line)" stroke-width=".8" stroke-dasharray="2 2"/></svg>
+        </div>
+        <div class="cup" id="cup"><span class="cap">كوب الألبان</span></div>
+      </div>
+      <div class="hint-drop">اضغطي على أي طعام في الطبق لإرجاعه</div>
+      <div class="groups" id="gchips"></div>
+      <div class="msg" id="msg">👋 ابدئي بسحب الأطعمة إلى الطبق، أو اضغطي عليها لإضافتها.</div>
+    </div>
+    <div class="tray">
+      <div><h2>سلة الأطعمة</h2><p class="sub">اختاري من كل مجموعة ليصبح طبقك متوازنًا وملوّنًا.</p></div>
+      <div class="filters" id="filters"></div>
+      <div id="shelves" style="display:flex;flex-direction:column;gap:12px"></div>
+    </div>
+  </section>
+
+  <!-- MYSTERY -->
+  <section id="v-mystery" class="mystery" hidden>
+    <div class="card3d">
+      <div class="flip" id="flip">
+        <div class="face front"><div class="q">؟</div><h3>وجبة غامضة</h3><button class="primary" id="reveal">اكشفي الوجبة</button></div>
+        <div class="face back"><div class="emo" id="mEmo"></div><h3 id="mName"></h3><p id="mDesc"></p></div>
+      </div>
+    </div>
+    <div class="solve">
+      <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap"><h2>ما المجموعات الغذائية في هذه الوجبة؟</h2><span class="counter" id="mCount"></span></div>
+      <div class="picks" id="picks"></div>
+      <button class="primary" id="check" disabled>تحقّقي من إجابتي</button>
+      <div id="explain" hidden></div>
+      <button class="ghost-btn" id="next" hidden style="align-self:flex-start">الوجبة التالية ←</button>
+    </div>
+  </section>
+
+  <!-- BADGES -->
+  <section id="v-badges" hidden>
+    <div class="badges-head">
+      <div><h2>شارات خبيرة التغذية</h2><p>كل إجابة صحيحة وكل طبق متوازن يقرّبك من شارة جديدة.</p></div>
+      <div class="meter"><small id="meterTxt"></small><div class="bar"><div id="meterBar" style="width:0"></div></div></div>
+    </div>
+    <div class="badges" id="badges"></div>
+  </section>
+
+  <!-- CERTIFICATES -->
+  <section id="v-certs" hidden>
+    <div class="cert-top">
+      <div><h2>شهادات الإنجاز</h2><p>أنجزي التحديات لتفتحي شهاداتك، ثم اكتبي اسمك ليظهر عليها.</p></div>
+      <div class="namebox"><label for="stName">اسم الطالبة كما سيظهر في الشهادة</label><input id="stName" maxlength="40" placeholder="اكتبي اسمك هنا"></div>
+    </div>
+    <div class="certs" id="certs"></div>
+    <div class="preview" id="preview"><div class="empty"><b>🎓 شهادتك تظهر هنا</b>اختاري شهادة مفتوحة من الأعلى لعرضها.</div></div>
+  </section>
+
+  <footer>«طبقي الذكي» · مبادرة تعليمية تفاعلية للتغذية الصحية</footer>
+</div>
+
+<div class="toast" id="toast"><span id="toastIco"></span><div id="toastTxt"></div></div>
+<canvas id="confetti"></canvas>
+
+<script>
+const GROUPS={
+  veg:{name:'الخضار',ico:'🥦',c:'var(--g-veg)',tip:'الخضار تمنح جسمك أليافًا وفيتامينات تساعدك على النشاط والتركيز.'},
+  fruit:{name:'الفواكه',ico:'🍎',c:'var(--g-fruit)',tip:'الفواكه حلوة بطبيعتها ومليئة بالفيتامينات والألوان.'},
+  grain:{name:'الحبوب',ico:'🍞',c:'var(--g-grain)',tip:'الحبوب تعطيك طاقة تكفيك للدراسة واللعب.'},
+  protein:{name:'البروتين',ico:'🍗',c:'var(--g-protein)',tip:'البروتين يساعد جسمك على النمو وبناء العضلات.'},
+  dairy:{name:'الألبان',ico:'🥛',c:'var(--g-dairy)',tip:'الحليب ومشتقاته تساعد على تقوية العظام والأسنان.'}
+};
+const MAIN=['veg','fruit','grain','protein'];
+const FOODS=[
+ ['🥕','جزر','veg'],['🥦','بروكلي','veg'],['🥒','خيار','veg'],['🍅','طماطم','veg'],['🥬','خس','veg'],['🫑','فلفل','veg'],
+ ['🍆','باذنجان','veg'],['🥔','بطاطس','veg'],['🧅','بصل','veg'],['🌽','ذرة','veg'],['🍄','فطر','veg'],['🫛','بازلاء','veg'],['🌶️','فلفل حار','veg'],['🧄','ثوم','veg'],
+ ['🍎','تفاح','fruit'],['🍌','موز','fruit'],['🍇','عنب','fruit'],['🍊','برتقال','fruit'],['🍓','فراولة','fruit'],['🌴','تمر','fruit'],
+ ['🍉','بطيخ','fruit'],['🥭','مانجو','fruit'],['🍍','أناناس','fruit'],['🥝','كيوي','fruit'],['🍑','خوخ','fruit'],['🍐','كمثرى','fruit'],['🫐','توت','fruit'],['🍒','كرز','fruit'],['🍈','شمّام','fruit'],['🥑','أفوكادو','fruit'],['🍋','ليمون','fruit'],
+ ['🍞','خبز بُر','grain'],['🍚','أرز','grain'],['🥣','شوفان','grain'],['🫓','خبز تميس','grain'],['🍝','معكرونة','grain'],
+ ['🥖','صامولي','grain'],['🍜','شعيرية','grain'],['🌾','برغل','grain'],['🥯','كعك','grain'],['🥐','كرواسون','grain'],['🍿','فشار','grain'],['🥞','فطائر','grain'],['🍘','بسكويت أرز','grain'],
+ ['🍗','دجاج','protein'],['🐟','سمك','protein'],['🥚','بيض','protein'],['🫘','فول','protein'],['🥜','مكسرات','protein'],['🥩','لحم','protein'],
+ ['🧆','طعمية','protein'],['🦐','روبيان','protein'],['🥫','تونة','protein'],['🍲','عدس','protein'],['🍖','كباب','protein'],['🦃','ديك رومي','protein'],['🌰','لوز','protein'],['🫛','حمص','protein'],
+ ['🥛','حليب','dairy'],['🧀','جبن','dairy'],['🫙','زبادي','dairy'],['🥤','لبن','dairy'],['🥄','لبنة','dairy'],['🍶','حليب بالتمر','dairy']
+];
+// quadrant base angles (math degrees, counterclockwise from right)
+const QUAD={veg:0,fruit:90,grain:180,protein:270};
+const SLOTS=[[45,25],[18,36],[72,36],[45,39]];
+
+const MEALS=[
+ {e:'🍛',n:'كبسة دجاج مع سلطة',d:'أرز بالبهارات، دجاج، وسلطة خضراء',g:['grain','protein','veg'],x:'الأرز من الحبوب، والدجاج بروتين، والسلطة خضار.'},
+ {e:'🍳',n:'شكشوكة مع خبز',d:'بيض مطهو بالطماطم والفلفل، مع خبز',g:['protein','veg','grain'],x:'البيض بروتين، والطماطم والفلفل خضار، والخبز حبوب.'},
+ {e:'🥣',n:'شوفان بالحليب والموز',d:'شوفان مطبوخ بالحليب، وشرائح موز فوقه',g:['grain','dairy','fruit'],x:'الشوفان حبوب، والحليب من الألبان، والموز فاكهة.'},
+ {e:'🫘',n:'فول بالطماطم مع تميس',d:'فول مدمس مع طماطم مقطعة وخبز تميس',g:['protein','veg','grain'],x:'الفول من البقوليات وهو مصدر بروتين، والطماطم خضار، والتميس حبوب.'},
+ {e:'🥪',n:'ساندويتش جبن وخيار',d:'خبز بُر، شرائح جبن، وخيار',g:['grain','dairy','veg'],x:'الخبز حبوب، والجبن من الألبان، والخيار خضار.'},
+ {e:'🍓',n:'زبادي بالفراولة والتمر',d:'زبادي مع قطع فراولة وتمر',g:['dairy','fruit'],x:'الزبادي من الألبان، والفراولة والتمر فواكه.'},
+ {e:'🐟',n:'سمك مشوي مع أرز وجزر',d:'سمك مشوي، أرز أبيض، وجزر مطهو',g:['protein','grain','veg'],x:'السمك بروتين، والأرز حبوب، والجزر خضار.'},
+ {e:'🍲',n:'مرقوق',d:'لحم وخضار مع قطع عجين مطهوة في المرق',g:['protein','veg','grain'],x:'اللحم بروتين، والكوسا والجزر خضار، والعجين مصنوع من الحبوب.'},
+ {e:'🧆',n:'ساندويتش طعمية بالسلطة',d:'خبز صامولي، أقراص طعمية، خس وطماطم',g:['grain','protein','veg'],x:'الصامولي حبوب، والطعمية من البقوليات فهي بروتين، والخس والطماطم خضار.'},
+ {e:'🍲',n:'شوربة عدس مع خبز',d:'شوربة عدس دافئة مع قطعة خبز بُر',g:['protein','grain'],x:'العدس من البقوليات وهو مصدر بروتين، والخبز حبوب.'},
+ {e:'🥤',n:'عصير مانجو باللبن',d:'مانجو مخفوقة مع لبن بارد',g:['fruit','dairy'],x:'المانجو فاكهة، واللبن من الألبان.'},
+ {e:'🦐',n:'روبيان مع أرز وفطر',d:'روبيان مطهو، أرز، وفطر وبصل',g:['protein','grain','veg'],x:'الروبيان بروتين، والأرز حبوب، والفطر والبصل خضار.'},
+ {e:'🍝',n:'معكرونة بالدجاج والبروكلي',d:'معكرونة مع قطع دجاج وبروكلي وجبن مبشور',g:['grain','protein','veg','dairy'],x:'المعكرونة حبوب، والدجاج بروتين، والبروكلي خضار، والجبن من الألبان.'},
+ {e:'🥗',n:'سلطة فواكه بالمكسرات',d:'تفاح وعنب وبرتقال مع حفنة مكسرات',g:['fruit','protein'],x:'التفاح والعنب والبرتقال فواكه، والمكسرات مصدر بروتين.'}
+];
+
+const BADGES=[
+ {id:'veg',ico:'🥦',n:'صديقة الخضار',d:'ضعي 3 أنواع من الخضار في طبق واحد'},
+ {id:'fruit',ico:'🍓',n:'محبّة الفواكه',d:'ضعي نوعين من الفواكه في طبق واحد'},
+ {id:'balanced',ico:'🍽️',n:'خبيرة الطبق المتوازن',d:'كوّني طبقًا فيه الخضار والفواكه والحبوب والبروتين'},
+ {id:'rainbow',ico:'🌈',n:'طبق قوس قزح',d:'طبق متوازن مع كوب من الألبان: خمس مجموعات معًا'},
+ {id:'detective',ico:'🔍',n:'محققة الوجبات',d:'اكتشفي مجموعات 3 وجبات غامضة بشكل صحيح'},
+ {id:'star',ico:'⭐',n:'نجمة التغذية',d:'اجمعي 150 نقطة'}
+];
+
+// ---------- state ----------
+let S={pts:0,badges:[],solved:0,mi:0,name:''};
+try{const s=JSON.parse(localStorage.getItem('smartPlate')||'null');if(s)S=Object.assign(S,s)}catch(e){}
+const save=()=>{try{localStorage.setItem('smartPlate',JSON.stringify(S))}catch(e){}};
+let plate=[]; let celebrated=false; let uid=0;
+
+const $=id=>document.getElementById(id);
+function addPoints(n){S.pts+=n;$('pts').textContent=S.pts;const s=$('score');s.classList.remove('pop');void s.offsetWidth;s.classList.add('pop');if(S.pts>=150)unlock('star');save();renderBadges()}
+$('pts').textContent=S.pts;
+
+// ---------- tabs ----------
+document.querySelectorAll('nav button').forEach(b=>b.onclick=()=>show(b.dataset.view));
+function show(v){document.querySelectorAll('nav button').forEach(b=>b.setAttribute('aria-selected',b.dataset.view===v));
+  if(v==='certs')renderCerts();
+  ['build','mystery','badges','certs'].forEach(k=>$('v-'+k).hidden=k!==v);}
+
+// ---------- tray ----------
+const shelves=$('shelves');
+Object.keys(GROUPS).forEach(g=>{
+  const G=GROUPS[g];const sh=document.createElement('div');sh.className='shelf';sh.style.setProperty('--c',G.c);
+  sh.innerHTML=`<h3>${G.ico} ${G.name}</h3><div class="foods"></div>`;
+  FOODS.filter(f=>f[2]===g).forEach(f=>{
+    const b=document.createElement('button');b.className='food';b.style.setProperty('--c',G.c);
+    b.innerHTML=`<span>${f[0]}</span>${f[1]}`;b.setAttribute('aria-label','أضيفي '+f[1]+' إلى الطبق');
+    attachDrag(b,f);sh.querySelector('.foods').appendChild(b);
+  });
+  shelves.appendChild(sh);
+});
+
+// filters
+const filters=$('filters');
+[['all','🧺 الكل']].concat(Object.keys(GROUPS).map(g=>[g,GROUPS[g].ico+' '+GROUPS[g].name])).forEach(([k,t])=>{
+  const b=document.createElement('button');b.textContent=t;b.dataset.k=k;b.setAttribute('aria-pressed',k==='all');if(k!=='all')b.style.setProperty('--c',GROUPS[k].c);
+  b.onclick=()=>{filters.querySelectorAll('button').forEach(x=>x.setAttribute('aria-pressed',x===b));
+    [...shelves.children].forEach((sh,i)=>sh.hidden=k!=='all'&&Object.keys(GROUPS)[i]!==k)};
+  filters.appendChild(b)});
+
+// group chips
+const gchips=$('gchips');
+Object.keys(GROUPS).forEach(g=>{const c=document.createElement('span');c.className='gchip'+(g==='dairy'?' opt':'');c.id='gc-'+g;c.style.setProperty('--c',GROUPS[g].c);c.innerHTML=`<i></i>${GROUPS[g].name}${g==='dairy'?' (إضافة)':''}`;gchips.appendChild(c)});
+
+// quadrant labels
+MAIN.forEach(g=>{const a=(QUAD[g]+45)*Math.PI/180;const l=document.createElement('span');l.className='qlabel';l.style.color=GROUPS[g].c;
+  l.style.left=(50+12*Math.cos(a))+'%';l.style.top=(50-12*Math.sin(a))+'%';l.textContent=GROUPS[g].name;$('plate').appendChild(l)});
+
+// ---------- drag & drop ----------
+const zone=$('dropzone'),plateEl=$('plate');
+function overZone(x,y){const r=zone.getBoundingClientRect();return x>=r.left&&x<=r.right&&y>=r.top&&y<=r.bottom}
+function attachDrag(btn,f){
+  let ghost=null,sx=0,sy=0,moved=false,pid=null;
+  btn.addEventListener('pointerdown',e=>{pid=e.pointerId;sx=e.clientX;sy=e.clientY;moved=false;btn.setPointerCapture(pid)});
+  btn.addEventListener('pointermove',e=>{if(e.pointerId!==pid)return;
+    if(!moved&&Math.hypot(e.clientX-sx,e.clientY-sy)>8){moved=true;ghost=document.createElement('div');ghost.className='ghost';ghost.textContent=f[0];document.body.appendChild(ghost);btn.classList.add('lift')}
+    if(moved){ghost.style.left=e.clientX+'px';ghost.style.top=e.clientY+'px';plateEl.classList.toggle('over',overZone(e.clientX,e.clientY))}});
+  const end=e=>{if(e.pointerId!==pid)return;pid=null;
+    if(moved){const ok=overZone(e.clientX,e.clientY);ghost.remove();ghost=null;btn.classList.remove('lift');plateEl.classList.remove('over');if(ok)addFood(f)}
+    else if(e.type==='pointerup')addFood(f)};
+  btn.addEventListener('pointerup',end);btn.addEventListener('pointercancel',end);
+  btn.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();addFood(f)}});
+}
+
+// ---------- plate logic ----------
+function count(g){return plate.filter(p=>p.f[2]===g).length}
+function addFood(f){
+  const g=f[2];
+  if(plate.some(p=>p.f[1]===f[1])){say(`${f[0]} موجود في طبقك بالفعل، جرّبي طعامًا آخر من ${GROUPS[g].name}.`);return}
+  const max=g==='dairy'?2:4;
+  if(count(g)>=max){say(`قسم ${GROUPS[g].name} ممتلئ 😊 جرّبي مجموعة أخرى ليتنوّع طبقك.`);return}
+  const isNewGroup=count(g)===0;
+  plate.push({f,id:++uid});
+  if(isNewGroup)addPoints(5);
+  plateEl.classList.remove('bump');void plateEl.offsetWidth;plateEl.classList.add('bump');
+  renderPlate();evaluate(GROUPS[g].tip,f[0]);
+}
+function removeFood(id){plate=plate.filter(p=>p.id!==id);renderPlate();evaluate(null)}
+function renderPlate(){
+  plateEl.querySelectorAll('.onplate').forEach(n=>n.remove());$('cup').querySelectorAll('.onplate').forEach(n=>n.remove());
+  const idx={veg:0,fruit:0,grain:0,protein:0};
+  plate.forEach(p=>{const g=p.f[2];const b=document.createElement('button');b.className='onplate';b.textContent=p.f[0];b.title='إرجاع '+p.f[1];b.setAttribute('aria-label','إرجاع '+p.f[1]);b.onclick=()=>removeFood(p.id);
+    if(g==='dairy'){$('cup').appendChild(b);return}
+    const [da,r]=SLOTS[idx[g]++];const a=(QUAD[g]+da)*Math.PI/180;
+    b.style.left=(50+r*Math.cos(a))+'%';b.style.top=(50-r*Math.sin(a))+'%';plateEl.appendChild(b)});
+  Object.keys(GROUPS).forEach(g=>$('gc-'+g).classList.toggle('on',count(g)>0));
+}
+function say(t,win){const m=$('msg');m.className='msg'+(win?' win':'');m.innerHTML=t}
+function evaluate(tip,emo){
+  const missing=MAIN.filter(g=>count(g)===0);
+  if(count('veg')>=3)unlock('veg');
+  if(count('fruit')>=2)unlock('fruit');
+  if(missing.length===0){
+    if(count('dairy')>0)unlock('rainbow');
+    if(!celebrated){celebrated=true;addPoints(30);unlock('balanced');say('🎉 أحسنتِ! اختياراتك تصنع فرقًا لصحتك',true);confetti();return}
+    say(tip?`${emo} ${tip}`:'طبقك متوازن ✨ يمكنك إضافة كوب من الألبان أو تجربة أطعمة أخرى.');return
+  }
+  celebrated=false;
+  const need='أضيفي شيئًا من '+missing.map(g=>GROUPS[g].name).join(' و')+' ليكتمل التوازن.';
+  say(tip?`${emo} ${tip}<br><small style="color:var(--muted)">${need}</small>`:(plate.length?need:'👋 ابدئي بسحب الأطعمة إلى الطبق، أو اضغطي عليها لإضافتها.'));
+}
+$('reset').onclick=()=>{plate=[];celebrated=false;renderPlate();evaluate(null)};
+
+// ---------- mystery ----------
+let picked=new Set(),checked=false;
+const picks=$('picks');
+Object.keys(GROUPS).forEach(g=>{const b=document.createElement('button');b.className='pick';b.dataset.g=g;b.style.setProperty('--c',GROUPS[g].c);b.setAttribute('aria-pressed','false');
+  b.innerHTML=`<i></i>${GROUPS[g].ico} ${GROUPS[g].name}`;b.onclick=()=>{if(checked)return;picked.has(g)?picked.delete(g):picked.add(g);b.setAttribute('aria-pressed',picked.has(g));$('check').disabled=!picked.size||!$('flip').classList.contains('open')};picks.appendChild(b)});
+function loadMeal(){
+  const m=MEALS[S.mi%MEALS.length];picked.clear();checked=false;
+  $('flip').classList.remove('open');$('reveal').hidden=false;
+  setTimeout(()=>{$('mEmo').textContent=m.e;$('mName').textContent=m.n;$('mDesc').textContent=m.d},350);
+  picks.querySelectorAll('.pick').forEach(b=>{b.className='pick';b.disabled=false;b.setAttribute('aria-pressed','false')});
+  $('check').disabled=true;$('check').hidden=false;$('explain').hidden=true;$('next').hidden=true;
+  $('mCount').textContent=`الوجبة ${(S.mi%MEALS.length)+1} من ${MEALS.length} · حللتِ ${S.solved}`;
+}
+$('reveal').onclick=()=>{$('flip').classList.add('open');$('reveal').hidden=true;$('check').disabled=!picked.size};
+$('check').onclick=()=>{
+  const m=MEALS[S.mi%MEALS.length];checked=true;const ans=new Set(m.g);
+  picks.querySelectorAll('.pick').forEach(b=>{const g=b.dataset.g;b.disabled=true;
+    if(ans.has(g)&&picked.has(g))b.classList.add('right');else if(ans.has(g))b.classList.add('missed');else if(picked.has(g))b.classList.add('extra')});
+  const exact=m.g.length===picked.size&&m.g.every(g=>picked.has(g));
+  const ex=$('explain');ex.hidden=false;ex.className='explain';
+  if(exact){S.solved++;addPoints(20);if(S.solved>=3)unlock('detective');ex.innerHTML=`<strong>🎉 إجابة صحيحة! +20 نقطة</strong>${m.x}`;confetti(60)}
+  else ex.innerHTML=`<strong>اقتربتِ! 💪</strong>${m.x}<br><small style="color:var(--muted)">المحاط بخط متقطّع مجموعة فاتتك، والمشطوب ليس في هذه الوجبة.</small>`;
+  $('check').hidden=true;$('next').hidden=false;S.mi++;save();
+  $('mCount').textContent=`حللتِ ${S.solved}`;
+};
+$('next').onclick=loadMeal;
+loadMeal();
+
+// ---------- badges ----------
+function unlock(id){if(S.badges.includes(id))return;S.badges.push(id);save();renderBadges();const b=BADGES.find(x=>x.id===id);toast(b.ico,`شارة جديدة: <b>${b.n}</b>`);
+  if(typeof CERTS!=='undefined'){renderCerts();const nc=CERTS.find(c=>c.need.includes(id)&&certOpen(c));if(nc)setTimeout(()=>toast('🎓',`فُتحت <b>شهادة ${nc.t}</b> في «شهاداتي»`),2800)}}
+function renderBadges(){
+  $('badges').innerHTML=BADGES.map(b=>{const got=S.badges.includes(b.id);return `<div class="badge${got?' got':''}"><div class="medal">${b.ico}</div><h3>${b.n}</h3><p>${b.d}</p><span class="state">${got?'✓ حصلتِ عليها':'لم تُفتح بعد'}</span></div>`}).join('');
+  const n=S.badges.length;$('meterTxt').textContent=`${n} من ${BADGES.length} شارات · ${S.pts} نقطة`;$('meterBar').style.width=(n/BADGES.length*100)+'%';
+}
+renderBadges();
+
+// ---------- certificates ----------
+const CERTS=[
+ {id:'plate',ico:'🍽️',t:'صانعة الطبق المتوازن',need:['balanced'],req:'تُفتح بعد تكوين أول طبق متوازن',why:'لنجاحها في تكوين طبق متوازن يجمع الخضار والفواكه والحبوب والبروتين'},
+ {id:'detective',ico:'🔍',t:'محققة الوجبات',need:['detective'],req:'تُفتح بعد حل 3 وجبات غامضة',why:'لتميّزها في اكتشاف المجموعات الغذائية في الوجبات الغامضة'},
+ {id:'expert',ico:'🏆',t:'خبيرة التغذية',need:BADGES.map(b=>b.id),req:'تُفتح بعد جمع الشارات الست كلها',why:'لإتمامها جميع تحديات المبادرة وجمعها كل شارات التغذية الصحية'}
+];
+let curCert=null;
+const nameIn=$('stName');nameIn.value=S.name||'';
+nameIn.addEventListener('input',()=>{S.name=nameIn.value.trim();save();if(curCert)drawCert(curCert)});
+function certOpen(c){return c.need.every(id=>S.badges.includes(id))}
+function renderCerts(){
+  $('certs').innerHTML=CERTS.map(c=>{const o=certOpen(c);return `<button class="cert${o?' open':''}" data-id="${c.id}" ${o?'':'disabled'} aria-current="${curCert===c.id}"><span class="ci">${o?c.ico:'🔒'}</span><h3>شهادة ${c.t}</h3><p>${c.req}</p><span class="st">${o?'✓ مفتوحة — اضغطي لعرضها':'مقفلة'}</span></button>`}).join('');
+  $('certs').querySelectorAll('.cert.open').forEach(b=>b.onclick=()=>{curCert=b.dataset.id;renderCerts();drawCert(curCert)});
+}
+async function drawCert(id){
+  const c=CERTS.find(x=>x.id===id);const pv=$('preview');
+  if(!S.name){pv.innerHTML='<div class="empty"><b>✍️ اكتبي اسمك أولًا</b>اكتبي اسمك في الخانة بالأعلى ليظهر على الشهادة.</div>';nameIn.focus();return}
+  try{await Promise.all([document.fonts.load('800 100px "Baloo Bhaijaan 2"'),document.fonts.load('500 40px "Readex Pro"')])}catch(e){}
+  const W=1600,H=1130,cv2=document.createElement('canvas');cv2.width=W;cv2.height=H;const x=cv2.getContext('2d');
+  const D='"Baloo Bhaijaan 2","Readex Pro",sans-serif',B='"Readex Pro",Tahoma,sans-serif';
+  x.fillStyle='#FFF8EA';x.fillRect(0,0,W,H);
+  // soft circles
+  x.fillStyle='#E7F2CF';x.beginPath();x.arc(120,120,190,0,7);x.fill();x.fillStyle='#FFE3C7';x.beginPath();x.arc(W-90,H-110,220,0,7);x.fill();
+  // frames
+  x.strokeStyle='#93C13E';x.lineWidth=26;x.strokeRect(40,40,W-80,H-80);
+  x.strokeStyle='#F28A2E';x.lineWidth=3;x.setLineDash([14,10]);x.strokeRect(84,84,W-168,H-168);x.setLineDash([]);
+  // corner foods
+  x.font='64px serif';x.textAlign='center';x.textBaseline='middle';
+  [['🥕',150,160],['🍎',W-150,160],['🍞',150,H-160],['🥛',W-150,H-160]].forEach(([e,a,b])=>x.fillText(e,a,b));
+  // plate medallion
+  x.fillStyle='#FFFFFF';x.strokeStyle='#E9E1CC';x.lineWidth=14;x.beginPath();x.arc(W/2,190,78,0,7);x.fill();x.stroke();
+  x.font='84px serif';x.fillText(c.ico,W/2,194);
+  x.direction='rtl';
+  x.fillStyle='#5E8A1E';x.font='800 108px '+D;x.fillText('شهادة إنجاز',W/2,345);
+  x.fillStyle='#F28A2E';x.font='700 58px '+D;x.fillText('«'+c.t+'»',W/2,440);
+  x.fillStyle='#6B7A55';x.font='500 36px '+B;x.fillText('تُمنح هذه الشهادة للطالبة',W/2,530);
+  x.fillStyle='#2E4320';let fs=96;do{x.font='800 '+fs+'px '+D;fs-=4}while(x.measureText(S.name).width>W-420&&fs>40);x.fillText(S.name,W/2,630);
+  const nw=Math.min(W-400,x.measureText(S.name).width+120);x.strokeStyle='#93C13E';x.lineWidth=4;x.beginPath();x.moveTo(W/2-nw/2,700);x.lineTo(W/2+nw/2,700);x.stroke();
+  x.fillStyle='#2E4320';x.font='500 34px '+B;x.fillText(c.why,W/2,770);
+  x.fillStyle='#6B7A55';x.font='500 30px '+B;x.fillText('أحسنتِ! اختياراتك تصنع فرقًا لصحتك',W/2,825);
+  // earned badges row
+  const got=BADGES.filter(b=>S.badges.includes(b.id));x.font='50px serif';
+  got.forEach((b,i)=>x.fillText(b.ico,W/2+(i-(got.length-1)/2)*80,900));
+  // footer
+  let dt='';try{dt=new Date().toLocaleDateString('ar-SA',{day:'numeric',month:'long',year:'numeric'})}catch(e){dt=new Date().toLocaleDateString()}
+  x.font='500 28px '+B;x.fillStyle='#6B7A55';
+  x.fillText('التاريخ',W-340,975);x.fillText('مبادرة',W/2,975);x.fillText('معلمة المبادرة',340,975);
+  x.fillStyle='#2E4320';x.font='700 34px '+D;
+  x.fillText(dt,W-340,1022);x.fillText('«طبقي الذكي»',W/2,1022);
+  x.strokeStyle='#C9BFA5';x.lineWidth=2;x.beginPath();x.moveTo(220,1035);x.lineTo(460,1035);x.stroke();
+  x.fillStyle='#F28A2E';x.font='700 30px '+D;x.fillText('⭐ '+S.pts+' نقطة',W/2,1068);
+  const url=cv2.toDataURL('image/png');
+  pv.innerHTML=`<img src="${url}" alt="شهادة ${c.t} للطالبة ${S.name.replace(/"/g,'')}"><p class="note">لحفظ الشهادة: اضغطي مطوّلًا عليها في الجوال واختاري «حفظ الصورة»، أو انقري بالزر الأيمن على الحاسب.</p>`;
+  confetti(80);
+}
+renderCerts();
+
+let tt;function toast(ico,txt){$('toastIco').textContent=ico;$('toastTxt').innerHTML=txt;const t=$('toast');t.classList.add('show');clearTimeout(tt);tt=setTimeout(()=>t.classList.remove('show'),2600)}
+
+// ---------- confetti ----------
+const cv=$('confetti'),cx=cv.getContext('2d');let parts=[],raf=null;
+function confetti(n=140){
+  if(matchMedia('(prefers-reduced-motion: reduce)').matches)return;
+  cv.width=innerWidth;cv.height=innerHeight;const cols=['#93C13E','#F28A2E','#E0555B','#D9A23A','#4B8FCB','#FFE3C7'];
+  for(let i=0;i<n;i++)parts.push({x:innerWidth/2+(Math.random()-.5)*200,y:innerHeight*.45,vx:(Math.random()-.5)*14,vy:-Math.random()*14-4,s:Math.random()*8+5,r:Math.random()*6,vr:(Math.random()-.5)*.3,c:cols[i%cols.length],life:120});
+  if(!raf)tick();
+}
+function tick(){cx.clearRect(0,0,cv.width,cv.height);parts=parts.filter(p=>p.life-->0);
+  parts.forEach(p=>{p.vy+=.35;p.x+=p.vx;p.y+=p.vy;p.vx*=.99;p.r+=p.vr;cx.save();cx.translate(p.x,p.y);cx.rotate(p.r);cx.globalAlpha=Math.min(1,p.life/40);cx.fillStyle=p.c;cx.fillRect(-p.s/2,-p.s/4,p.s,p.s/2);cx.restore()});
+  raf=parts.length?requestAnimationFrame(tick):null;if(!raf)cx.clearRect(0,0,cv.width,cv.height)}
+</script>
