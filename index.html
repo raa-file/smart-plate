@@ -221,7 +221,7 @@ footer{text-align:center;color:var(--muted);font-size:12.5px;margin-top:32px}
         <div class="plate" id="plate">
           <svg viewBox="0 0 100 100" aria-hidden="true"><line x1="50" y1="6" x2="50" y2="94" stroke="var(--line)" stroke-width=".8" stroke-dasharray="2 2"/><line x1="6" y1="50" x2="94" y2="50" stroke="var(--line)" stroke-width=".8" stroke-dasharray="2 2"/></svg>
         </div>
-        <div class="cup" id="cup"><span class="cap">كوب الألبان</span></div>
+        <div class="cup" id="cup"><span class="cap">صحن الألبان</span></div>
       </div>
       <div class="hint-drop">اضغطي على أي طعام في الطبق لإرجاعه</div>
       <div class="groups" id="gchips"></div>
@@ -321,7 +321,7 @@ const BADGES=[
  {id:'veg',ico:'🥦',n:'صديقة الخضار',d:'ضعي 3 أنواع من الخضار في طبق واحد'},
  {id:'fruit',ico:'🍓',n:'محبّة الفواكه',d:'ضعي نوعين من الفواكه في طبق واحد'},
  {id:'balanced',ico:'🍽️',n:'خبيرة الطبق المتوازن',d:'كوّني طبقًا فيه الخضار والفواكه والحبوب والبروتين'},
- {id:'rainbow',ico:'🌈',n:'طبق قوس قزح',d:'طبق متوازن مع كوب من الألبان: خمس مجموعات معًا'},
+ {id:'rainbow',ico:'🌈',n:'طبق قوس قزح',d:'طبق متوازن مع صنف من الألبان: خمس مجموعات معًا'},
  {id:'detective',ico:'🔍',n:'محققة الوجبات',d:'اكتشفي مجموعات 3 وجبات غامضة بشكل صحيح'},
  {id:'star',ico:'⭐',n:'نجمة التغذية',d:'اجمعي 150 نقطة'}
 ];
@@ -418,7 +418,7 @@ function evaluate(tip,emo){
   if(missing.length===0){
     if(count('dairy')>0)unlock('rainbow');
     if(!celebrated){celebrated=true;addPoints(30);unlock('balanced');say('🎉 أحسنتِ! اختياراتك تصنع فرقًا لصحتك',true);confetti();return}
-    say(tip?`${emo} ${tip}`:'طبقك متوازن ✨ يمكنك إضافة كوب من الألبان أو تجربة أطعمة أخرى.');return
+    say(tip?`${emo} ${tip}`:'طبقك متوازن ✨ يمكنك إضافة صنف من الألبان في الصحن الجانبي أو تجربة أطعمة أخرى.');return
   }
   celebrated=false;
   const need='أضيفي شيئًا من '+missing.map(g=>GROUPS[g].name).join(' و')+' ليكتمل التوازن.';
